@@ -35,7 +35,7 @@ struct segtree {
     void build(vector<ll> &v) {
         build(v, 0, 0, size);
     }
-    void set (int i, int val, int x, int lx, int rx) {
+    void set (int i, ll val, int x, int lx, int rx) {
         if(rx - lx == 1) {
             values[x].update(val);
             return;
@@ -49,7 +49,7 @@ struct segtree {
         }
         values[x] = merge(values[2 * x + 1], values[2 * x + 2]);
     }
-    void set(int i, int val) {
+    void set(int i, ll val) {
         set(i, val, 0, 0, size);
     }
     node get(int l, int r, int x, int lx, int rx) {
