@@ -39,7 +39,8 @@ struct segtree {
         if(rx - lx == 1) {
             if(lx < (int)v.size())
                 values[x] = node(v[lx]);
-            return;        }
+            return; 
+        }
         int m = (lx + rx) / 2;
         build(v, 2 * x + 1, lx, m);
         build(v, 2 * x + 2, m, rx);
