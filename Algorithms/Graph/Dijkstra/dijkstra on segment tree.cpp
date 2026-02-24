@@ -1,6 +1,14 @@
 /*dijkstra on segment tree
- * addedge foreach [e, l, r, cost]
  * O((V + E log V) log V)
+ * ---
+ * init(n);
+ * 1-based -> --u , --l only
+ * input st -> 1-based, (seg_size - 1) + st
+ * input end -> 1-based, (seg_size - 1) + end
+ * addedge(u, L, R, cost, 0, 0, seg_size);
+ * restore_path(st, end, par, path)
+ * dijkstra((seg_size - 1) + st, dis, par);
+ * dis[(seg_size - 1) + end];
  */
 ll INF = 1e18;
 int seg_size;
@@ -50,10 +58,7 @@ void dijkstra(int st, vector<ll> &dis , vector<int> &par) {
     }
   }
 }
-vector<int> path;
-void restore_path(int _st, int _end, vector<int> &par) {
-  int st = (seg_size - 1) + _st;
-  int end = (seg_size - 1) + _end;
+void restore_path(int st, int end, vector<int> &par, vector<int> &path) {
   if (par[end] == -1 && st != end) return;
   for (int v = end; v != -1;v = par[v]) {
     if (v >= seg_size - 1) {
