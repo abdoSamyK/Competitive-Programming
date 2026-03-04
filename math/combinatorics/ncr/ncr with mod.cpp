@@ -21,6 +21,11 @@ void inverse() {
     inv[i - 1] = inv[i] * i % mod;
   }
 }
+void initncr() {
+  // make it at main
+  factorial();
+  inverse();
+}
 ll nCr(int n, int r) {
   if (r > n || r < 0) return 0;
   return fac[n] * inv[r] % mod * inv[n - r] % mod;
