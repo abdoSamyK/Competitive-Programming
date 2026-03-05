@@ -15,7 +15,7 @@ void factorial() {
   fac[0] = 1;
   for (int i = 1; i < N; i++) { fac[i] = fac[i - 1] * i % mod; }
 }
-void inverse() {
+void inversefact() {
   inv[N - 1] = fastpow(fac[N - 1], mod - 2);
   for (int i = N - 1; i >= 1; i--) {
     inv[i - 1] = inv[i] * i % mod;
@@ -24,7 +24,7 @@ void inverse() {
 void initncr() {
   // make it at main
   factorial();
-  inverse();
+  inversefact();
 }
 ll nCr(int n, int r) {
   if (r > n || r < 0) return 0;
