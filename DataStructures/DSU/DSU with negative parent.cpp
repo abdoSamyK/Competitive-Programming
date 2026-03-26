@@ -3,7 +3,7 @@ int parent[N];
 int components;
 
 void init(int n) { // make it for each testcase
-  fill(parent, parent + n + 1, -1);
+  memset(parent, -1, sizeof(parent[0]) * (n + 1));
   components = n;
 }
 
