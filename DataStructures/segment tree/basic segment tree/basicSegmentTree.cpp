@@ -1,3 +1,7 @@
+/*
+* set v[i] = x
+ * get the sum of a range [l, r)
+ */
 struct node {
     ll ini = 0, val;
     // initialize with neutral value
