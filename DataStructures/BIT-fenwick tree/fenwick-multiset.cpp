@@ -1,20 +1,21 @@
-template<class T = ll>
-struct myMultiset { // 1-based
-  int n = 1e6 + 3;
-  vector<T> bt;
+
+struct myMultiset { // 1-based Fenwick Tree Multiset
+  int n;
+  vector<int> bt;
   int lg;
 
-  myMultiset() {
+  myMultiset(int _n) {
+    n = _n;
     bt.assign(n + 1, 0);
     lg = 1;
     while ((lg << 1) <= n) lg <<= 1;
   }
 
-  T lowbit(int x) {
+  int lowbit(int x) { // return least significant set bit
     return x & -x;
   }
 
-  void add(int idx, T val) {
+  void add(int idx, int val = 1) { // add val to the frequency of value idx
     if (idx <= 0) return;
     while (idx <= n) {
       bt[idx] += val;
@@ -22,8 +23,8 @@ struct myMultiset { // 1-based
     }
   }
 
-  T get(int idx) {
-    T ans = 0;
+  int get(int idx) { // return number of elements with value <= idx (prefix sum)
+    int ans = 0;
     while (idx > 0) {
       ans += bt[idx];
       idx -= lowbit(idx);
@@ -31,47 +32,69 @@ struct myMultiset { // 1-based
     return ans;
   }
 
-  T get_idx(int idx) { // how many times the value idx appears in the multiset.
+  int get_idx(int idx) { // returns how many times value idx appears
     return get(idx) - get(idx - 1);
   }
 
-  T get_range(int l, int r) { // number of elements in [l, r]
+  int get_range(int l, int r) { // returns the number of elements in [l, r]
     return get(r) - get(l - 1);
   }
 
-  void set(int idx, T val) {
-    T old = get_idx(idx);
+  void set(int idx, int val) { // sets the frequency of value idx to val
+    int old = get_idx(idx);
     add(idx, val - old);
   }
 
-  int lower_bound(T x) {
-    T sum = 0;
-    int idx = 0;
+  void insert(int val, int cnt = 1) { // inserts cnt copies of val
+    add(val, cnt);
+  }
 
-    for (int pw = lg; pw > 0; pw >>= 1) {
+  void erase(int val, int cnt = 1) { // removes up to cnt copies of val
+    cnt = min(cnt, get_idx(val));
+    if (cnt > 0) add(val, -cnt);
+  }
+
+  int get_sz() { // returns the total number of elements
+    return get(n);
+  }
+
+  int kth(int k) { // returns the value of the k-th smallest element (1-based)
+                  // e.g. {1,2,3,3} -> kth(4)=3
+                  // returns -1 if k is invalid
+    if (k <= 0 || k > get_sz()) return -1;
+
+    int idx = 0;
+    for (int pw = lg; pw; pw >>= 1) {
       int nxt = idx + pw;
-      if (nxt <= n && sum + bt[nxt] < x) {
-        sum += bt[nxt];
+      if (nxt <= n && bt[nxt] < k) {
         idx = nxt;
+        k -= bt[nxt];
       }
     }
     return idx + 1;
   }
 
-  void insert(int va, T cnt = 1) {
-    add(va, cnt);
+  int order_of_key(int val) { // number of elements strictly less than val
+    return get(val - 1);
   }
 
-  void erase(int va, T cnt = 1) {
-    cnt = min(cnt, get_idx(va));
-    if (cnt > 0) add(va, -cnt);
+  int lower_bound(int val) { // first element >= val, or -1 if none exists
+    int cnt = get(val - 1);
+    if (cnt == get_sz()) return -1;
+    return kth(cnt + 1);
   }
 
-  int kth(T k) { // val of k-th smallest element (1-based) (1, 2, 3, 3) -> kth(4) = 3
-    if (k <= 0 || k > get_sz()) return -1; // kth(5) = -1
-    return lower_bound(k);
+  int upper_bound(int val) { // first element > val, or -1 if none exists
+    int cnt = get(val);
+    if (cnt == get_sz()) return -1;
+    return kth(cnt + 1);
   }
-  T get_sz() { // total number of elements in the multiset
-    return get(n);
+
+  bool contains(int val) { // returns true if val exists
+    return get_idx(val) > 0;
+  }
+
+  void clear() { // removes all elements
+    fill(bt.begin(), bt.end(), 0);
   }
 };
