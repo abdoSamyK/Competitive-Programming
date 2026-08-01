@@ -1,56 +1,54 @@
+/*
+ * find a cycle in => directed graph
+ * return true if a cycle exists and stores one cycle in 'cycle'.
+ */
+
 const int N = 1e5 + 5;
+int n;
 vector<int> adj[N];
-vector<int> color;
-vector<int> path;
+int color[N];      // 0 = unvisited, 1 = visiting, 2 = done
+int parent[N];
+int cycle_start, cycle_end;
 vector<int> cycle;
 
-/*
- * DFS to detect a cycle in connected directed graph
- */
-void dfs(int u) {
-  color[u] = 1;                // currently visiting
-  path.push_back(u);
+bool dfs(int u) {
+  color[u] = 1;
 
   for (int v : adj[u]) {
-    if (color[v] == 0) {
-      dfs(v);
-    } else if (color[v] == 1) {
-      if (cycle.empty()) {
-        for (int i = path.size() - 1; i >= 0; i--) {
-          cycle.push_back(path[i]);
-          if (path[i] == v) break;
-        }
-      }
+    if (!color[v]) {
+      parent[v] = u;
+      if (dfs(v)) return true;
+    }
+    else if (color[v] == 1) {
+      cycle_start = v;
+      cycle_end = u;
+      return true;
     }
   }
 
-  path.pop_back();
-  color[u] = 2;   // fully processed
+  color[u] = 2;
+  return false;
 }
 
-void solve() {
-  int n, m;
-  cin >> n >> m;
+bool find_cycle() {
+  fill(color, color + n + 1, 0);
+  fill(parent, parent + n + 1, -1);
 
-  for (int i = 1; i <= n; i++) adj[i].clear();
-  color.assign(n + 1, 0);
-  path.clear();
   cycle.clear();
+  cycle_start = cycle_end = -1;
 
-  for (int i = 0; i < m; i++) {
-    int u, v;
-    cin >> u >> v;
-    adj[u].push_back(v);
-  }
+  for (int i = 1; i <= n; i++)
+    if (!color[i] && dfs(i))
+      break;
 
-  dfs(1);
+  if (cycle_start == -1)
+    return false;
 
-  if (!cycle.empty()) {
-    reverse(cycle.begin(), cycle.end());
-    cout << "cycle found\n";
-    for (int x : cycle) cout << x << ' ';
-    cout << '\n';
-  } else {
-    cout << "cycle not found\n";
-  }
+  cycle.push_back(cycle_start);
+  for (int v = cycle_end; v != cycle_start; v = parent[v])
+    cycle.push_back(v);
+  cycle.push_back(cycle_start);
+
+  reverse(cycle.begin(), cycle.end());
+  return true;
 }
